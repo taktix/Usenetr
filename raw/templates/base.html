@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+<!--
+    Copyright 2009 Oregon State University
+
+    This file is part of PROJECT_NAME.
+
+    PROJECT_NAME is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    PROJECT_NAME is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with PROJECT_NAME.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+    <head>
+        <script type="text/javascript" src="/static/js/jquery-1.3.2.min.js"></script>
+        
+        <script type="text/javascript" src="/static/js/jquery.qtip-1.0.0-rc3.min.js"></script>
+    {% block head %}
+        <link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}/css/main.css" />
+        <style>{% include "main.css" %}</style>
+    {% endblock %}
+    <head>
+<body>
+        <div id="headerContainer">
+        {% block header %}
+
+            <div id="title_bar">
+                <a href="#">usenetr {{VERSION}}</a>
+            </div>
+
+            <div id="mainmenu">
+                
+                
+                {% if user.is_authenticated %}
+                    <span class="mainmenuitem lastmenuitem"><a class="mainmenuitem" href="{{ROOT}}/accounts/logout">Logout</a></span>
+                {% else %}
+                    <span class="mainmenuitem lastmenuitem"><a class="mainmenuitem" href="{{ROOT}}/accounts/login">Login</a></span>
+                {% endif %}
+            </div>
+            <div id="submenu">
+                {% block submenu %}
+                {% endblock %}
+            </div>
+        {% endblock %}
+        </div>
+
+        <div id="errors">
+            {% block errors %}
+            {% endblock %}
+        </div>
+
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+</body>
+</html>

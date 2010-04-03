@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    {{block.super}}
+
+    <style>
+        .nfo{
+            cursor:pointer;
+            color:blue;
+        }
+        
+        pre {
+            font-size:10px;
+            font-family:monospace;
+            line-height:10px;
+            height:400px;
+            overflow: auto;
+        }
+    </style>
+    
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+           $('.nfo').qtip({
+                title:'NFO',
+                content: {
+                   url: '/nfo/',
+                   data: { id: 1 },
+                   method: 'get'
+                },
+                style: { 
+                    name: 'dark', // Inherit from preset style
+                    width:540,
+                    border:{
+                        radius:5,
+                        width:10
+                    }
+                },
+                position: {
+                    corner: {
+                        target: 'leftMiddle',
+                        tooltip: 'rightMiddle'
+                    }
+                },
+                hide:{fixed:true}
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th></th>
+            <th></th>
+        </tr>
+    
+        {% for post in posts %}
+            <tr id="p_{{post.id}}">
+                <td>{{post.subject}}</td>
+                <td class="nfo">NFO</td>
+                <td><a href="/nzb/{{post.id}}/">NZB</a></td>
+            </tr>
+        {% endfor %}
+    <table>
+{% endblock %}
