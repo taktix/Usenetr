@@ -9,7 +9,7 @@
             color:blue;
         }
         
-        pre {
+        pre, pre * {
             font-size:10px;
             font-family:monospace;
             line-height:10px;
@@ -56,28 +56,33 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
-           $('.nfo').qtip({
-                title:'NFO',
-                content: {
-                   url: '/nfo/',
-                   data: { id: 1 },
-                   method: 'get'
-                },
-                style: { 
-                    name: 'dark', // Inherit from preset style
-                    width:540,
-                    border:{
-                        radius:5,
-                        width:10
-                    }
-                },
-                position: {
-                    corner: {
-                        target: 'leftMiddle',
-                        tooltip: 'rightMiddle'
-                    }
-                },
-                hide:{fixed:true}
+           $('.nfo').each(function(){
+            
+                id = this.parentNode.id.substring(2);
+            
+                $(this).qtip({
+                    title:'NFO',
+                    content: {
+                       url: '/nfo/',
+                       data: { id: id},
+                       method: 'get'
+                    },
+                    style: { 
+                        name: 'dark', // Inherit from preset style
+                        width:540,
+                        border:{
+                            radius:5,
+                            width:10
+                        }
+                    },
+                    position: {
+                        corner: {
+                            target: 'leftMiddle',
+                            tooltip: 'rightMiddle'
+                        }
+                    },
+                    hide:{fixed:true}
+                });
             });
         });
     </script>
