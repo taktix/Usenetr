@@ -4,6 +4,9 @@
     {{block.super}}
 
     <style>
+        #posts {width:100%;}
+        .nzb, .nfo {width:25px;}
+    
         .nfo{
             cursor:pointer;
             color:blue;
@@ -117,7 +120,7 @@
         </span>
     </div>
 
-    <table>
+    <table id="posts">
         <tr>
             <th>Subject</th>
             <th></th>
@@ -126,9 +129,9 @@
     
         {% for post in posts.object_list %}
             <tr id="p_{{post.id}}">
-                <td>{{post.subject}}</td>
+                <td>{%block title%}{{post.subject}}{%endblock%}</td>
                 <td class="nfo">NFO</td>
-                <td><a href="/nzb/{{post.id}}/">NZB</a></td>
+                <td class="nzb"><a href="/nzb/{{post.id}}/">NZB</a></td>
             </tr>
         {% endfor %}
     <table>

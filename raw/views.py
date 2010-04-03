@@ -11,9 +11,18 @@ from models import Post
 
 @login_required
 def posts(request):
-    #paginate - 25 posts per page
-    print Post.objects.all().count()
-    paginator = Paginator(Post.objects.all(), 25) # Show 25 posts per page
+    posts, page, pages = paginate(request, Post.objects.all())
+
+    return render_to_response('posts.html', {
+        'posts':posts,
+        'page_start':(page-1)*25,
+        'pages':pages
+    }, context_instance=RequestContext(request))
+
+
+def paginate(request, posts):
+    """Paginates a list of posts"""
+    paginator = Paginator(posts, 25) # Show 25 posts per page
 
     # Make sure page request is an int. If not, deliver first page.
     try:
@@ -31,11 +40,7 @@ def posts(request):
     # digg style pagination list
     pages = get_page_list(paginator, page)
     
-    return render_to_response('posts.html', {
-        'posts':posts,
-        'page_start':(page-1)*25,
-        'pages':pages
-    }, context_instance=RequestContext(request))
+    return posts, page, pages
 
 
 def get_page_list(paginator, page=1):

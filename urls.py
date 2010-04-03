@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     (r'^accounts/logout/$', logout, {'next_page':'/'}),
 
     (r'^/*', include('raw.urls')),
+    (r'^tv/*', include('tv.urls')),
 
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root':  settings.MEDIA_ROOT}),
 )
