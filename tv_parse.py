@@ -29,6 +29,7 @@ titles = [
         re.compile('[ "]([\w\._-]*).[sS](\d{1,2}\.?[dD]\d{1,2})'),    # S00D00
         re.compile('[ "]([\w\.]*).(\d{4}[\.-]\d{2}[\.-]\d{2})'),      # YYYY-MM-DD
         re.compile('[ "]([\w\._-]*).(\d{1,2}x\d{1,2})'),              # 0x00
+        re.compile('[ "]([\w\._-]*).(Season\d{1,2}.?Disk\d{1,2})'),              # 0x00
         re.compile('[ "]([\w\._-]*).([eE]\d{2})'),                    # E00
         re.compile('[ "]([\w\._-]*).(\d{2}[-.]\d{2}[-.]\d{2})'),      # DD-MM-YY
         re.compile('[ "]([\w\._-]*).(\d{4})')                         # YYYY
