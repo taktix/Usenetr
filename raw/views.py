@@ -87,3 +87,17 @@ def nzb_download(request, id):
     response['Content-Disposition'] = 'attachment; filename=%s.nzb' % id
     response.write(post.nzb)
     return response
+
+
+@login_required
+def search(request):
+    regex = '.'.join(request.GET['clause'].split(' '))
+    query = Post.objects.filter(subject__regex=regex)
+    
+    posts, page, pages = paginate(request, query)
+
+    return render_to_response('posts.html', {
+        'posts':posts,
+        'page_start':(page-1)*25,
+        'pages':pages
+    }, context_instance=RequestContext(request))

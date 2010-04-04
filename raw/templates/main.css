@@ -88,6 +88,10 @@ a.mainmenuitem:visited           { text-decoration:none; }
 a.mainmenuitem:hover             { text-decoration:underline; }
 a.mainmenuitem:active            { text-decoration:none;}
 
+#clause {
+    width:300px;
+}
+
 table {
     border-collapse:collapse;
 }

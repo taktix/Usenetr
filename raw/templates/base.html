@@ -42,6 +42,7 @@
             </div>
 
             <div id="mainmenu">
+                <form action='/search/' method="get">
                 <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/">Raw</a></span>
                 <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/tv/">TV</a></span>
                 
@@ -50,6 +51,8 @@
                 {% else %}
                     <span class="mainmenuitem lastmenuitem"><a class="mainmenuitem" href="{{ROOT}}/accounts/login">Login</a></span>
                 {% endif %}
+                    <input id="clause" type="text" name="clause">
+                </form>
             </div>
             <div id="submenu">
                 {% block submenu %}
