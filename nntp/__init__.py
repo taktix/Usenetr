@@ -9,7 +9,7 @@ class Group():
     from a group.  it implements some common functions for acting like an
     iterable list.
     """
-    iter_step = 1000
+    iter_step = 10000
     
     def __init__(self, server, name):
         self.server = server
