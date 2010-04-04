@@ -19,9 +19,9 @@
             white-space:nowrap;
         }
         
-        .nzb, .nfo {width:25px;}
+        .actions {width:55px;}
     
-        .nfo{
+        .buttonnfo{
             cursor:pointer;
             color:blue;
         }
@@ -80,9 +80,9 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
-           $('.nfo').each(function(){
+           $('.button_nfo').each(function(){
             
-                id = this.parentNode.id.substring(2);
+                id = this.parentNode.parentNode.id.substring(2);
             
                 $(this).qtip({
                     title:'NFO',
@@ -159,8 +159,10 @@
                         {% endfor %}
                     </ul>
                 </td>
-                <td class="nfo">NFO</td>
-                <td class="nzb"><a href="/nzb/{{post.id}}/">NZB</a></td>
+                <td class="actions">
+                    <div class="button button_nfo"></div>
+                    <a href="/nzb/{{post.id}}/"><div class="button button_nzb"></div></a>
+                </td>
             </tr>
         {% endfor %}
     <table>

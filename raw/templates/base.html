@@ -38,20 +38,22 @@
         {% block header %}
 
             <div id="title_bar">
-                <a href="#">usenetr {{VERSION}}</a>
+                
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/admin/">Admin</a></span>
+                    {% endif %}
+                    <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/accounts/logout">Logout</a></span>
+                {% endif %}
             </div>
 
             <div id="mainmenu">
                 <form action='/search/' method="get">
-                <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/">Raw</a></span>
-                <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/tv/">TV</a></span>
-                
                 {% if user.is_authenticated %}
-                    <span class="mainmenuitem lastmenuitem"><a class="mainmenuitem" href="{{ROOT}}/accounts/logout">Logout</a></span>
-                {% else %}
-                    <span class="mainmenuitem lastmenuitem"><a class="mainmenuitem" href="{{ROOT}}/accounts/login">Login</a></span>
-                {% endif %}
+                    <span class="mainmenuitem"><a class="mainmenuitem" href="{{ROOT}}/">Raw</a></span>
+                    <span class="mainmenuitem lastmenuitem"><a class="mainmenuitem" href="{{ROOT}}/tv/">TV</a></span>
                     <input id="clause" type="text" name="clause">
+                {% endif %}
                 </form>
             </div>
             <div id="submenu">
