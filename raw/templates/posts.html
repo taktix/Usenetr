@@ -5,6 +5,20 @@
 
     <style>
         #posts {width:100%;}
+        
+        .groups {
+            color:#888888;
+            font-weight:normal;
+            margin-left:10px;
+        }
+        
+        .groups li {
+            display:inline;
+            font-size:11px;
+            margin-left:15px;
+            white-space:nowrap;
+        }
+        
         .nzb, .nfo {width:25px;}
     
         .nfo{
@@ -137,7 +151,14 @@
     
         {% for post in posts.object_list %}
             <tr id="p_{{post.id}}">
-                <td class="title">{%block title%}{{post.subject}}{%endblock%}</td>
+                <td class="title">
+                    {%block title%}{{post.subject}}{%endblock%}
+                    <ul class="groups">
+                        {% for group in post.groups.all %}
+                            <li>&diams; {{group.name}}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
                 <td class="nfo">NFO</td>
                 <td class="nzb"><a href="/nzb/{{post.id}}/">NZB</a></td>
             </tr>
