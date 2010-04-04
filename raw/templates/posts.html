@@ -81,17 +81,22 @@
         $(document).ready(function()
         {
            $('.button_nfo').each(function(){
-            
                 id = this.parentNode.parentNode.id.substring(2);
-            
-                $(this).qtip({
+                $this = $(this);
+                $this.qtip({
                     title:'NFO',
                     content: {
                        url: '/nfo/',
                        data: { id: id},
-                       method: 'get'
+                       method: 'get',
+                       text:'<div class="loading"></div>',
+                       title: {
+                            text:'NFO',
+                            button:'close'
+                       }
                     },
-                    style: { 
+                    style: {
+                        
                         name: 'dark', // Inherit from preset style
                         width:540,
                         border:{
@@ -105,6 +110,7 @@
                             tooltip: 'rightMiddle'
                         }
                     },
+                    show:{when:{event:'click'}},
                     hide:{fixed:true}
                 });
             });
@@ -145,7 +151,6 @@
     <table id="posts">
         <tr>
             <th>Subject</th>
-            <th></th>
             <th></th>
         </tr>
     
