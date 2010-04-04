@@ -21,7 +21,8 @@
         }
         
         div.pagination {
-            margin:10px
+            margin:10px;
+            text-align:right;
         }
         
         a.pagination { 
@@ -53,6 +54,12 @@
             width:2.9em;
             margin-left:3px;
             margin-right:3px;
+        }
+        
+        .title {
+            color:#393984;
+            font-family: verdana,helvetica,arial,sans-serif;
+            font-weight:bold;
         }
     </style>
     
@@ -92,7 +99,7 @@
 {% endblock %}
 
 {% block content %}
-    
+    {% if not pages.0|length_is:1 or pages.1 or pages.2 %}
     <div class="pagination">
         <span class="step-links">
             {% if posts.has_previous %}
@@ -119,6 +126,7 @@
             {% endif %}
         </span>
     </div>
+    {% endif %}
 
     <table id="posts">
         <tr>
@@ -129,13 +137,14 @@
     
         {% for post in posts.object_list %}
             <tr id="p_{{post.id}}">
-                <td>{%block title%}{{post.subject}}{%endblock%}</td>
+                <td class="title">{%block title%}{{post.subject}}{%endblock%}</td>
                 <td class="nfo">NFO</td>
                 <td class="nzb"><a href="/nzb/{{post.id}}/">NZB</a></td>
             </tr>
         {% endfor %}
     <table>
         
+    {% if not pages.0|length_is:1 or pages.1 or pages.2 %}
     <div class="pagination">
         <span class="step-links">
             {% if posts.has_previous %}
@@ -161,4 +170,5 @@
             {% endif %}
         </span>
     </div>
+    {% endif %}
 {% endblock %}
