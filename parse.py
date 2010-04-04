@@ -44,7 +44,7 @@ class Parser():
         print self.server
         group = self.server.get_group(self.group.name)
         print group
-        for id, subject in group[:10000]:
+        for id, subject in group:
             #print subject[0], subject[1]
             match = NZB_REGEX.search(subject)
             if not match:
@@ -57,14 +57,19 @@ class Parser():
             
             try:
                 post = Post.objects.get(nzb_id=id)
-                # already exists, nothing to add
+                # already exists, only add group
+                if not post.groups.get(post=post).count():
+                    posts.groups.add(self.group)
                 return
+                
             except Post.DoesNotExist:
                 post = Post()
                 post.first_id = id
                 post.nzb_id = article_id
                 post.subject = subject
             post.save()
+            post.groups.add(self.group)
+            
             
             print post
 
