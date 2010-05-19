@@ -15,6 +15,7 @@ if __name__ == '__main__':
     # Done setting up django environment
 
 from settings import *
+from raw.models import Parser
 
 
 if __name__ == '__main__':

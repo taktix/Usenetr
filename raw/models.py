@@ -212,48 +212,60 @@ class Parser():
         start = None
         group = self.group
         for id, subject in iterator:
-            try:
-                if not start:
-                    start = id
             
-                #print subject[0], subject[1]
-                match = NZB_REGEX.search(subject)
-                if not match:
-                    # we can't do anything if we can't match the post to anything
-                    # else, right now only NZB are being accepted
-                    continue
-                
-                # we need the real id to reference across groups.
-                article_id = self.server._server.stat(id)[2]
-                
-                try:
-                    post = Post.objects.get(nzb_id=id)
-                    # already exists, only add group
-                    if not post.groups.get(post=post).count():
-                        posts.groups.add(group)
-                    return
-                    
-                except Post.DoesNotExist:
-                    post = Post()
-                    post.first_id = id
-                    post.nzb_id = article_id
-                    post.subject = subject
-                post.save()
-                post.groups.add(group)
-                #print post
-            
-            finally:
-                # create history objects every 10000 posts
+            if not start:
+                start = id
+        
+            #print subject[0], subject[1]
+            match = NZB_REGEX.search(subject)
+            if not match:
+                # we can't do anything if we can't match the post to anything
+                # else, right now only NZB are being accepted
                 count += 1
-                if count == 50000:
+                if count == 1000:
                     print 'creating a history object (%s-%s)' % (start, id)
                     history = ParseHistory()
                     history.start = start
                     history.end = id
                     history.group = group
                     history.save()
+                    print group.get_last()
                     start = id
                     count = 0
+                continue
+            
+            # we need the real id to reference across groups.
+            article_id = self.server._server.stat(id)[2]
+            
+            try:
+                post = Post.objects.get(nzb_id=id)
+                # already exists, only add group
+                if not post.groups.get(post=post).count():
+                    posts.groups.add(group)
+                return
+                
+            except Post.DoesNotExist:
+                post = Post()
+                post.first_id = id
+                post.nzb_id = article_id
+                post.subject = subject
+            post.save()
+            post.groups.add(group)
+            #print post
+            
+            
+            # create history objects every 10000 posts
+            count += 1
+            if count == 1000:
+                print 'creating a history object (%s-%s)' % (start, id)
+                history = ParseHistory()
+                history.start = start
+                history.end = id
+                history.group = group
+                history.save()
+                print group.get_last()
+                start = id
+                count = 0
         
         
         #create a final history for whatever was at the end
