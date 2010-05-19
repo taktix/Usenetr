@@ -92,14 +92,14 @@ class Group(models.Model):
         server = get_server()
         iterator = server.get_group(self.name)
         parser = Parser(self.name, server)
-        last = self.get_last()
-        end = len(iterator)
+        
+        end = iterator.last
         first = iterator.first
-        print 'END IS: ', end
+        count = iterator.count
         INTERVAL = 10000
         
         while end > first:
-            parser._parse(iterator[end-INTERVAL:end])
+            parser._parse(iterator[end-INTERVAL-count:end-count])
             end -= INTERVAL
 
 
