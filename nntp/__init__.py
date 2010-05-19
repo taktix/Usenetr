@@ -3,7 +3,7 @@ import re
 import yenc
 
 
-class Group():
+class GroupIterator():
     """
     Wrapper class for a UseNet group.  This class is used for grabbing subjects
     from a group.  it implements some common functions for acting like an

@@ -41,9 +41,20 @@ class Parser():
         self.server = get_server()
 
     def parse(self):
+        """
+        Parses the group held by this parser object
+        """
         print self.server
         group = self.server.get_group(self.group.name)
         print group
+        self._parse(group)
+        
+    def _parse(self, group):
+        """
+        parses a GroupIterator passed in.
+        
+        @returns id of last post that was parsed
+        """
         for id, subject in group:
             #print subject[0], subject[1]
             match = NZB_REGEX.search(subject)
@@ -70,8 +81,9 @@ class Parser():
             post.save()
             post.groups.add(self.group)
             
-            
             print post
+            
+        return id
 
 
 if __name__ == '__main__':

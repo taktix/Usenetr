@@ -43,16 +43,28 @@ class Group(models.Model):
             return histories[0].end
         return None
 
+
     def parse_new(self):
         """ parses group starting with the newest post """
         server = get_server()
         iterator = GroupIterator(server, self.name)
         parser = Parser(server, self.name)
         last = get_last()
+        
         if last == None:
             last = parser._parse(iterator)
-        else:    
-            last = parser._parse(iterator[last+1:])
+            start = 1
+        else:
+            start = last+1
+            last = parser._parse(iterator[start:])
+            
+        # create history of what was just parsed, then consolidate it with
+        # existing parse histories
+        history = ParseHistory()
+        history.start = start
+        history.end = last
+        history.group = self
+        history.save()
         self.consolidate_histories()
     
     def parse(self, all=False):
@@ -64,8 +76,15 @@ class Group(models.Model):
         if all:
             last = parser._parse(iterator)
         else:
-            
             last = parser._parse(iterator)
+            
+        # create history of what was just parsed, then consolidate it with
+        # existing parse histories
+        history = ParseHistory()
+        history.start = 1
+        history.end = last
+        history.group = self
+        history.save()
         self.consolidate_histories()
     
     def reverse_parse(self, all=False):
@@ -146,7 +165,7 @@ class Post(models.Model):
     
     def get_nzb(self):
         """
-        Fetches the nfo post from usenet, decoding it.  This will cache the
+        Fetches the nzb post from usenet, decoding it.  This will cache the
         post if needed
         """
         if not self.nzb_id:
