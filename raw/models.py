@@ -16,14 +16,75 @@ class Group(models.Model):
     """
     name = models.CharField(max_length=64)
 
+    def consolidate_histories(self):
+        """ consolidates consecutive history objects into a single history
+        object for quicker searching """
+        
+        histories = self.histories.all().order_by('start','end')
+        if len(histories) < 2:
+            # need at least 2 history objects to consolidate them
+            return
+        
+        current = histories[0]
+        for history in histories[1:]:
+            if history.start <= current.end+1:
+                if history.end > current.end:
+                    current.end = history.end
+                current.save()
+                history.delete()
+            else:
+                #no overlap, switch to new current
+                current = history
+
+    def get_last(self):
+        """ Returns the last id parsed in this group """
+        histories = self.parsehistorys.all().order_by('-end')
+        if histories.count():
+            return histories[0].end
+        return None
+
+    def parse_new(self):
+        """ parses group starting with the newest post """
+        server = get_server()
+        iterator = GroupIterator(server, self.name)
+        parser = Parser(server, self.name)
+        last = get_last()
+        if last == None:
+            last = parser._parse(iterator)
+        else:    
+            last = parser._parse(iterator[last+1:])
+        self.consolidate_histories()
+    
+    def parse(self, all=False):
+        """ parses group starting with the first post """
+        server = get_server()
+        iterator = GroupIterator(server, self.name)
+        parser = Parser(server, self.name)
+        
+        if all:
+            last = parser._parse(iterator)
+        else:
+            
+            last = parser._parse(iterator)
+        self.consolidate_histories()
+    
+    def reverse_parse(self, all=False):
+        """
+        Parses group starting from the newest post.  This is used for building
+        the index with the most recent content first.  Useful for when you are
+        concerned with something recent, and don't want to spend the time
+        indexing from the beginning (for instance giganews retains 600 days)
+        """
+        pass
+
 
 class ParseHistory(models.Model):
     """
     Describes parse history for a group.  This aids the parser by avoiding
     records you have already parsed.  There may be multiple segments that you
-    have parsed in the past
+    have parsed in the past, skipping these can save large amounts of time
     """
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, related_name="histories")
     start = models.IntegerField()
     end = models.IntegerField()
     
