@@ -192,8 +192,8 @@ class Parser():
     
     def __init__(self, name, server=None):
         try:
-            self.group = models.Group.objects.get(name=name)
-        except Exception:
+            self.group = Group.objects.get(name=name)
+        except Group.DoesNotExist:
             group = Group()
             group.name = name
             group.save()
