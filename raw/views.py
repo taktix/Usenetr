@@ -91,8 +91,9 @@ def nzb_download(request, id):
 
 @login_required
 def search(request):
-    regex = '.'.join(request.GET['clause'].split(' '))
-    query = Post.objects.filter(subject__regex=regex)
+    query = Post.objects.all()
+    for clause in request.GET['clause'].split(' '):
+        query = query.filter(subject__icontains=clause)
     
     posts, page, pages = paginate(request, query)
 
