@@ -37,12 +37,15 @@ class Group(models.Model):
                 current = history
 
     def get_last(self):
-        """ Returns the last id parsed in this group """
+        """
+        Returns the last id parsed in this group.  This only checks the parse
+        history objects associated with this group.  Its possible there are posts
+        that were parsed and created but a history object never created.
+        """
         histories = self.parsehistorys.all().order_by('-end')
         if histories.count():
             return histories[0].end
         return None
-
 
     def parse_new(self):
         """ parses group starting with the newest post """
@@ -60,11 +63,6 @@ class Group(models.Model):
             
         # create history of what was just parsed, then consolidate it with
         # existing parse histories
-        history = ParseHistory()
-        history.start = start
-        history.end = last
-        history.group = self
-        history.save()
         self.consolidate_histories()
     
     def parse(self, all=False):
@@ -80,11 +78,6 @@ class Group(models.Model):
             
         # create history of what was just parsed, then consolidate it with
         # existing parse histories
-        history = ParseHistory()
-        history.start = 1
-        history.end = last
-        history.group = self
-        history.save()
         self.consolidate_histories()
     
     def reverse_parse(self, all=False):
