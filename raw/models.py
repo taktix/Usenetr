@@ -2,7 +2,7 @@ import re
 
 from django.db import models
 
-from nntp import Server
+from nntp import Server, GroupIterator
 from raw import get_server
 
 
@@ -42,7 +42,7 @@ class Group(models.Model):
         history objects associated with this group.  Its possible there are posts
         that were parsed and created but a history object never created.
         """
-        histories = self.parsehistorys.all().order_by('-end')
+        histories = self.histories.all().order_by('-end')
         if histories.count():
             return histories[0].end
         return None
@@ -50,15 +50,17 @@ class Group(models.Model):
     def parse_new(self):
         """ parses group starting with the newest post """
         server = get_server()
-        iterator = GroupIterator(server, self.name)
-        parser = Parser(server, self.name)
-        last = get_last()
+        iterator = server.get_group(self.name)
+        parser = Parser(self.name, server)
+        last = self.get_last()
         
         if last == None:
+            print '%s Parsing starting with: %s ' % (self.name, 1)
             last = parser._parse(iterator)
             start = 1
         else:
             start = last+1
+            print '%s Parsing starting with: %s ' % (self.name, start)
             last = parser._parse(iterator[start:])
             
         # create history of what was just parsed, then consolidate it with
@@ -69,7 +71,7 @@ class Group(models.Model):
         """ parses group starting with the first post """
         server = get_server()
         iterator = GroupIterator(server, self.name)
-        parser = Parser(server, self.name)
+        parser = Parser(self.name)
         
         if all:
             last = parser._parse(iterator)
@@ -170,3 +172,95 @@ class Post(models.Model):
         self._nzb = server.get_file(self.nzb_id)
         return self._nzb
     nzb = property(get_nzb)
+    
+    
+class Parser():
+    """
+    Class for parsing posts from a usenet group
+    """
+    
+    def __init__(self, name, server=None):
+        try:
+            self.group = models.Group.objects.get(name=name)
+        except Exception:
+            group = Group()
+            group.name = name
+            group.save()
+            self.group = group
+        
+        self.server = server if server else get_server()
+
+    def parse(self):
+        """
+        Parses the group held by this parser object
+        """
+        print self.server
+        group = self.server.get_group(self.group.name)
+        print group
+        self._parse(group)
+        
+    def _parse(self, iterator):
+        """
+        parses a GroupIterator passed in.  This will create posts for all nzbs
+        that are found.   Every 10000 posts a parse history object will also be
+        created to ensure that if the process fails or is canceled a large
+        history will not be lost.
+        
+        @returns id of last post that was parsed
+        """
+        count = 0
+        start = None
+        group = self.group
+        for id, subject in iterator:
+            try:
+                if not start:
+                    start = id
+            
+                #print subject[0], subject[1]
+                match = NZB_REGEX.search(subject)
+                if not match:
+                    # we can't do anything if we can't match the post to anything
+                    # else, right now only NZB are being accepted
+                    continue
+                
+                # we need the real id to reference across groups.
+                article_id = self.server._server.stat(id)[2]
+                
+                try:
+                    post = Post.objects.get(nzb_id=id)
+                    # already exists, only add group
+                    if not post.groups.get(post=post).count():
+                        posts.groups.add(group)
+                    return
+                    
+                except Post.DoesNotExist:
+                    post = Post()
+                    post.first_id = id
+                    post.nzb_id = article_id
+                    post.subject = subject
+                post.save()
+                post.groups.add(group)
+                #print post
+            
+            finally:
+                # create history objects every 10000 posts
+                count += 1
+                if count == 50000:
+                    print 'creating a history object'
+                    history = ParseHistory()
+                    history.start = start
+                    history.end = id
+                    history.group = group
+                    history.save()
+                    start = id
+                    count = 0
+        
+        
+        #create a final history for whatever was at the end
+        history = ParseHistory()
+        history.start = start
+        history.end = id
+        history.group = group
+        history.save()
+        start = id
+        return id
