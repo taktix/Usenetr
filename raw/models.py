@@ -89,7 +89,18 @@ class Group(models.Model):
         concerned with something recent, and don't want to spend the time
         indexing from the beginning (for instance giganews retains 600 days)
         """
-        pass
+        server = get_server()
+        iterator = server.get_group(self.name)
+        parser = Parser(self.name, server)
+        last = self.get_last()
+        end = len(iterator)
+        first = iterator.first
+        print 'END IS: ', end
+        INTERVAL = 10000
+        
+        while end > first:
+            parser._parse(iterator[end-INTERVAL:end])
+            end -= INTERVAL
 
 
 class ParseHistory(models.Model):
@@ -222,7 +233,7 @@ class Parser():
                 # we can't do anything if we can't match the post to anything
                 # else, right now only NZB are being accepted
                 count += 1
-                if count == 1000:
+                if count == 50000:
                     print 'creating a history object (%s-%s)' % (start, id)
                     history = ParseHistory()
                     history.start = start
@@ -242,6 +253,7 @@ class Parser():
                 # already exists, only add group
                 if not post.groups.get(post=post).count():
                     posts.groups.add(group)
+                print post
                 return
                 
             except Post.DoesNotExist:
@@ -251,12 +263,12 @@ class Parser():
                 post.subject = subject
             post.save()
             post.groups.add(group)
-            #print post
+            print post
             
             
             # create history objects every 10000 posts
             count += 1
-            if count == 1000:
+            if count == 50000:
                 print 'creating a history object (%s-%s)' % (start, id)
                 history = ParseHistory()
                 history.start = start
