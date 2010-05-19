@@ -61,7 +61,7 @@ class Group(models.Model):
         else:
             start = last+1
             print '%s Parsing starting with: %s ' % (self.name, start)
-            last = parser._parse(iterator[start:])
+            last = parser._parse(iterator[start-iterator.first:])
             
         # create history of what was just parsed, then consolidate it with
         # existing parse histories
@@ -246,7 +246,7 @@ class Parser():
                 # create history objects every 10000 posts
                 count += 1
                 if count == 50000:
-                    print 'creating a history object'
+                    print 'creating a history object (%s-%s)' % (start, id)
                     history = ParseHistory()
                     history.start = start
                     history.end = id

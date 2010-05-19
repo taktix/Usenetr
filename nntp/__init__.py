@@ -38,7 +38,7 @@ class GroupIterator():
         step = self.iter_step if e-j > self.iter_step else e-j
         for start in range(s, e, step):
             end = start+step if start+step < e else e
-            print '   - inner slice: %s - %s' % (start-s, end-s)
+            print '   - inner slice: %s - %s  (%s - %s)' % (start-s, end-s, start, end)
             resp, subs = self.server.xhdr('subject', '%s-%s' % (start, end))
             for post in subs:
                 yield post
