@@ -32,9 +32,10 @@ class GroupIterator():
         returns a generator that yields subjects.  The generator will query the
         server in increments of self.iter_step.  step is ignored
         """
+        j = j if j else self.last
         print '  Slicing: %s to %s' % (i, j)
         s = i+self.first
-        e = j+self.first if j else self.count
+        e = j+self.first
         step = self.iter_step if e-j > self.iter_step else e-j
         for start in range(s, e, step):
             end = start+step if start+step < e else e
