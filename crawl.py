@@ -15,9 +15,9 @@ if __name__ == '__main__':
     # Done setting up django environment
 
 from settings import *
-from raw.models import Category, Parser
+from raw.models import Group, Parser
 
 
 if __name__ == '__main__':
-    for group in Category.objects.all():
+    for group in Group.objects.all():
         group.parse_new()
