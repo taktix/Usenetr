@@ -112,7 +112,7 @@ class Group(models.Model):
         end = iterator.last
         first = iterator.first
         count = iterator.count
-        INTERVAL = 10000
+        INTERVAL = 100000
         print 'reverse parse: first=%s   end=%s  count=%s' % (first, end, count)
         while end > first:
             parser._parse(iterator[end-INTERVAL-first:end-first])
@@ -277,7 +277,6 @@ class Parser():
                 post.subject = subject
             post.save()
             post.groups.add(group)
-            print post
             
             
             # create history objects every 10000 posts
