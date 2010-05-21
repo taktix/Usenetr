@@ -12,4 +12,9 @@ class GroupAdmin(admin.ModelAdmin):
     inlines = [HistoryInline]
 
 
+class PostFilterAdmin(admin.ModelAdmin):
+    list_display = ('regex',)
+
+
 admin.site.register(Group, GroupAdmin)
+admin.site.register(PostFilter, PostFilterAdmin)

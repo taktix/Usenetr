@@ -27,5 +27,6 @@ from raw.models import Group
 
 
 if __name__ == '__main__':
-    for group in Group.objects.all():
-        group.parse_new()
+    for group in Group.objects.filter(name='alt.binaries.teevee'):
+        #group.parse_new()
+        group.reverse_parse()

@@ -165,8 +165,10 @@
                     </ul>
                 </td>
                 <td class="actions">
+                    {% if post.nzb_id %}
                     <div class="button button_nfo"></div>
                     <a href="/nzb/{{post.id}}/"><div class="button button_nzb"></div></a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

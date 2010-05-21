@@ -4,11 +4,26 @@ from django.db import models
 
 from nntp import Server, GroupIterator
 from raw import get_server
-
+from util.regex import Composite
 
 NZB_REGEX = re.compile('\.nzb')
 NFO_REGEX = re.compile('\.nfo')
 NZB_NFO_REGEX = re.compile('\.nfo(.|\n)*?<segment.*number="1"\>(.*)\</segment>')
+
+
+class PostFilter(models.Model):
+    """ regex used to filter post titles when crawling """
+    regex = models.CharField(max_length=224)
+    __re = None
+
+    def get_re(self):
+        if self.__re:
+            return self.__re
+        self.__re = re.compile(self.regex, re.IGNORECASE)
+        return self.__re
+    
+    re = property(get_re)
+
 
 class Group(models.Model):
     """
@@ -120,8 +135,7 @@ class Post(models.Model):
     Describes a raw binary post.  This describes info for finding the related
     files.
     
-    uid - identify used by the usenet group to identify parts of a post
-    first_id - id of the first post found for this binary
+    id - id for this post
     nzb_id - id of the nzb for this post
     nfo_id - id of the nfo for this post
     
@@ -131,9 +145,8 @@ class Post(models.Model):
                     2) The nfo post subject
                     3) The first post subject found
     """
+    id = models.CharField(max_length=32, null=True, primary_key=True)
     groups = models.ManyToManyField(Group)
-    #uid = models.IntegerField()
-    first_id = models.IntegerField()
     nzb_id = models.CharField(max_length=32, null=True)
     nfo_id = models.CharField(max_length=32, null=True)
     subject = models.CharField(max_length=180)
@@ -194,6 +207,8 @@ class Parser():
     def __init__(self, name, server=None):
         try:
             self.group = Group.objects.get(name=name)
+            additional_regex = [filter.re for filter in PostFilter.objects.all()]
+            self.filter_regex = Composite([NZB_REGEX]+additional_regex)
         except Group.DoesNotExist:
             group = Group()
             group.name = name
@@ -206,9 +221,7 @@ class Parser():
         """
         Parses the group held by this parser object
         """
-        print self.server
         group = self.server.get_group(self.group.name)
-        print group
         self._parse(group)
         
     def _parse(self, iterator):
@@ -223,13 +236,14 @@ class Parser():
         count = 0
         start = None
         group = self.group
+        FILTER_REGEX = self.filter_regex
+        
         for id, subject in iterator:
             
             if not start:
                 start = id
         
-            #print subject[0], subject[1]
-            match = NZB_REGEX.search(subject)
+            match = FILTER_REGEX.search(subject)
             if not match:
                 # we can't do anything if we can't match the post to anything
                 # else, right now only NZB are being accepted
@@ -241,7 +255,6 @@ class Parser():
                     history.end = id
                     history.group = group
                     history.save()
-                    print group.get_last()
                     start = id
                     count = 0
                 continue
@@ -250,17 +263,17 @@ class Parser():
             article_id = self.server._server.stat(id)[2]
             
             try:
-                post = Post.objects.get(nzb_id=id)
+                post = Post.objects.get(id=article_id)
                 # already exists, only add group
-                if not post.groups.get(post=post).count():
+                if not post.groups.get(post=post):
                     posts.groups.add(group)
-                print post
                 return
                 
             except Post.DoesNotExist:
                 post = Post()
-                post.first_id = id
-                post.nzb_id = article_id
+                post.id = article_id
+                if NZB_REGEX.search(subject):
+                    post.nzb_id = article_id
                 post.subject = subject
             post.save()
             post.groups.add(group)
@@ -276,16 +289,17 @@ class Parser():
                 history.end = id
                 history.group = group
                 history.save()
-                print group.get_last()
                 start = id
                 count = 0
         
         
         #create a final history for whatever was at the end
-        history = ParseHistory()
-        history.start = start
-        history.end = id
-        history.group = group
-        history.save()
-        start = id
-        return id
+        if id:
+            history = ParseHistory()
+            history.start = start
+            history.end = id
+            history.group = group
+            history.save()
+            start = id
+            return id
+        return None
