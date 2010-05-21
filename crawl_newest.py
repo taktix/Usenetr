@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+
+# =============================================================
+# Script for parsing new posts from all groups in the database
+# =============================================================
+
+
 if __name__ == '__main__':
     import sys
     import os
@@ -14,10 +20,12 @@ if __name__ == '__main__':
     # ==========================================================
     # Done setting up django environment
 
+
 from settings import *
-from raw.models import Parser
+
+from raw.models import Group
 
 
 if __name__ == '__main__':
-    parser = Parser('alt.binaries.teevee')
-    parser.parse()
+    for group in Group.objects.all():
+        group.reverse_parse()
