@@ -93,13 +93,14 @@ class Group(models.Model):
         iterator = server.get_group(self.name)
         parser = Parser(self.name, server)
         
+        
         end = iterator.last
         first = iterator.first
         count = iterator.count
         INTERVAL = 10000
-        
+        print 'reverse parse: first=%s   end=%s  count=%s' % (first, end, count)
         while end > first:
-            parser._parse(iterator[end-INTERVAL-count:end-count])
+            parser._parse(iterator[end-INTERVAL-first:end-first])
             end -= INTERVAL
 
 
