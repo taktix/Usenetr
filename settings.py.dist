@@ -69,7 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'master-naturalist.urls'
+ROOT_URLCONF = 'Usenetr.urls'
 
 TEMPLATE_DIRS = (
     '%s/templates' % DOC_ROOT
