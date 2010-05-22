@@ -24,22 +24,29 @@ class GroupIterator():
     
     def __getitem__(self, i):
         """ get a single subject """
+        if type(i) == slice:
+            return self.get_slice(i.start, i.stop, i.step)
+            
         index = i+self.first
-        self.server.xhdr('subject', '%s-%s' % (index, index))
+        return self.server.xhdr('subject', '%s-%s' % (index, index))
     
-    def __getslice__(self, i=0, j=None, step=None):
+    def get_slice(self, i=0, j=2147483647, step=None):
         """
         returns a generator that yields subjects.  The generator will query the
         server in increments of self.iter_step.  step is ignored
+        
+        indexes are zero based.  
+        
+        @param i - zero based index of post.  Index 
         """
-        j = j if j else self.last
-        print '  Slicing: %s to %s' % (i, j)
+        # XXX when j is none its set to the largest possible int.
+        j = j if j!=2147483647 else self.last+1-self.first
         s = i+self.first
         e = j+self.first
         step = self.iter_step if e-j > self.iter_step else e-j
         for start in range(s, e, step):
             end = start+step if start+step < e else e
-            print '   - inner slice: %s - %s  (%s - %s)' % (start-s, end-s, start, end)
+            print '   - inner slice: %s - %s, %s  (%s - %s)' % (start-s, end-s, step, start, end)
             resp, subs = self.server.xhdr('subject', '%s-%s' % (start, end))
             for post in subs:
                 yield post
@@ -49,7 +56,7 @@ class GroupIterator():
         Returns a generator for all subjects in this group.  This delegates to
         self.__getslice__
         """
-        return self[:self.count]
+        return self[:self.count+1]
 
     def __str__(self):
         return '%(name)s: start=%(first)s end=%(last)s count=%(count)s' % self.__dict__
