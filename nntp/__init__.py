@@ -68,7 +68,6 @@ class Server():
         print self._server
     
     def get_group(self, name):
-        print 'getting group: ', name
         return GroupIterator(self._server, name)
     
     def get_file(self, id):

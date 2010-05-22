@@ -70,9 +70,8 @@ class Group(models.Model):
         last = self.get_last()
         
         if last == None:
-            print '%s Parsing starting with: %s ' % (self.name, 1)
+            print '%s Parsing all posts' % (self.name)
             last = parser._parse(iterator)
-            start = 1
         else:
             start = last+1
             print '%s Parsing starting with: %s ' % (self.name, start)
@@ -85,8 +84,8 @@ class Group(models.Model):
     def parse(self, all=False):
         """ parses group starting with the first post """
         server = get_server()
-        iterator = GroupIterator(server, self.name)
-        parser = Parser(self.name)
+        iterator = server.get_group(self.name)
+        parser = Parser(self.name, server)
         
         if all:
             last = parser._parse(iterator)
@@ -237,7 +236,6 @@ class Parser():
         start = None
         group = self.group
         FILTER_REGEX = self.filter_regex
-        
         for id, subject in iterator:
             
             if not start:
@@ -267,7 +265,7 @@ class Parser():
                 # already exists, only add group
                 if not post.groups.get(post=post):
                     posts.groups.add(group)
-                return
+                continue
                 
             except Post.DoesNotExist:
                 post = Post()

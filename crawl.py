@@ -20,4 +20,4 @@ from raw.models import Group, Parser
 
 if __name__ == '__main__':
     for group in Group.objects.all():
-        group.parse_new()
+        group.parse()

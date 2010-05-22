@@ -28,4 +28,4 @@ from raw.models import Group
 
 if __name__ == '__main__':
     for group in Group.objects.all():
-        group.reverse_parse()
+        group.parse_new()
