@@ -10,6 +10,8 @@ NZB_REGEX = re.compile('\.nzb')
 NFO_REGEX = re.compile('\.nfo')
 NZB_NFO_REGEX = re.compile('\.nfo(.|\n)*?<segment.*number="1"\>(.*)\</segment>')
 
+YENC_SEGMENT = re.compile('yEnc \((\d)/(\d)\)')
+YENC_FILENAME = re.compile('"(.*)" yEnc \(\d/\d\)')
 
 class PostFilter(models.Model):
     """ regex used to filter post titles when crawling """
@@ -131,8 +133,9 @@ class ParseHistory(models.Model):
 
 class Post(models.Model):
     """
-    Describes a raw binary post.  This describes info for finding the related
-    files.
+    Describes a complete binary post.  This describes info for finding the related
+    files.  Ideally this will be an nzb post as it already contains all the information
+    needed.
     
     id - id for this post
     nzb_id - id of the nzb for this post
@@ -196,6 +199,24 @@ class Post(models.Model):
         self._nzb = server.get_file(self.nzb_id)
         return self._nzb
     nzb = property(get_nzb)
+
+    def get_segment_id(self):
+        """ returns the yenc segment position and total related segments """
+        match = YENC_SEGMENT.search(self.subject)
+        if match:
+            id, total = match.groups()
+        return int(id), int(total)
+    segment_id = property(get_segment_id)
+    
+    def get_filename(self):
+        match = YENC_FILENAME.search(self.subject)
+        if match:
+            return match.groups()[0]
+    filename=property(get_filename)
+    
+    def find_related(self):
+        """ finds related segments that make up the same file as this post """
+        return Post.objects.filter(subject__contains=self.filename)
     
     
 class Parser():

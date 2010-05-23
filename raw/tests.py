@@ -4,7 +4,8 @@ from raw.models import *
 
 def suite():
     return unittest.TestSuite([
-            unittest.TestLoader().loadTestsFromTestCase(GroupTest),            
+            unittest.TestLoader().loadTestsFromTestCase(GroupTest),
+            unittest.TestLoader().loadTestsFromTestCase(PostTest),
         ])
 
 def c_group(**kwargs):
@@ -14,6 +15,15 @@ def c_group(**kwargs):
     group.__dict__.update(kwargs)
     group.save()
     return group
+
+SUBJECT = subject = '[1337]-[FULL]-[#a.b.teevee@EFNet]-[ Testers.S08E23-E24.The.One.Where.I.prove.this.works.UNCUT.Taktix ]-[38/38] - "testers.8x23-taktix.vol31+04.par2" yEnc (%d/%d)'
+def c_post(segment_id=1, segment_total=5, **kwargs):
+    """ helper for creating posts """
+    post = Post()    
+    post.subject = SUBJECT % (segment_id, segment_total)
+    post.__dict__.update(kwargs)
+    post.save()
+    return post
 
 
 def c_history(**kwargs):
@@ -99,3 +109,30 @@ class GroupTest(unittest.TestCase):
         h = g.histories.all()[1]
         self.assert_(h.start==15, h.start)
         self.assert_(h.end==30, h.end)
+
+
+class PostTest(unittest.TestCase):
+    """ tests for posts """
+    
+    def setUp(self):
+        self.tearDown()
+    
+    def tearDown(self):
+        Post.objects.all().delete()
+        Group.objects.all().delete()
+    
+    def test_get_filename(self):
+        filename = c_post().filename
+        self.assert_(filename=="testers.8x23-taktix.vol31+04.par2", filename)
+    
+    def test_get_segment(self):
+        segment_id, total = c_post().segment_id
+        self.assert_(segment_id==1, segment_id)
+        self.assert_(total==5, total)
+    
+    def test_find_related(self):
+        for i in range(5):
+            post = c_post(segment_id=i)
+        related = post.find_related()
+        self.assert_(related.count()==5, related.count())
+    
