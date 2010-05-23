@@ -10,8 +10,8 @@ NZB_REGEX = re.compile('\.nzb')
 NFO_REGEX = re.compile('\.nfo')
 NZB_NFO_REGEX = re.compile('\.nfo(.|\n)*?<segment.*number="1"\>(.*)\</segment>')
 
-YENC_SEGMENT = re.compile('yEnc \((\d)/(\d)\)')
-YENC_FILENAME = re.compile('"(.*)" yEnc \(\d/\d\)')
+YENC_SEGMENT = re.compile('yEnc \((\d+)/(\d+)\)')
+YENC_FILENAME = re.compile('"(.*)" yEnc \(\d+/\d+\)')
 
 class PostFilter(models.Model):
     """ regex used to filter post titles when crawling """
@@ -216,7 +216,10 @@ class Post(models.Model):
     
     def find_related(self):
         """ finds related segments that make up the same file as this post """
-        return Post.objects.filter(subject__contains=self.filename)
+        filename = self.filename
+        if filename:
+            return Post.objects.filter(subject__contains=self.filename)
+        return Post.objects.none()
     
     
 class Parser():

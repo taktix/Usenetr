@@ -124,11 +124,16 @@ class PostTest(unittest.TestCase):
     def test_get_filename(self):
         filename = c_post().filename
         self.assert_(filename=="testers.8x23-taktix.vol31+04.par2", filename)
+        filename = c_post(segment_id=100, segment_total=1000).filename
+        self.assert_(filename=="testers.8x23-taktix.vol31+04.par2", filename)
     
     def test_get_segment(self):
         segment_id, total = c_post().segment_id
         self.assert_(segment_id==1, segment_id)
         self.assert_(total==5, total)
+        segment_id, total = c_post(segment_id=100, segment_total=1000).segment_id
+        self.assert_(segment_id==100, segment_id)
+        self.assert_(total==1000, total)
     
     def test_find_related(self):
         for i in range(5):

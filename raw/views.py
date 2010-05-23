@@ -90,6 +90,18 @@ def nzb_download(request, id):
 
 
 @login_required
+def find_related(request, id):
+    query = Post.objects.get(id=id).find_related()
+    posts, page, pages = paginate(request, query)
+
+    return render_to_response('posts.html', {
+        'posts':posts,
+        'page_start':(page-1)*25,
+        'pages':pages
+    }, context_instance=RequestContext(request))
+
+
+@login_required
 def search(request):
     query = Post.objects.all()
     for clause in request.GET['clause'].split(' '):

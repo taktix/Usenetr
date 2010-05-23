@@ -209,7 +209,7 @@ label { margin-right:5px; font-weight:bold;}
 
 .button_nfo { background-image:url({{MEDIA_URL}}/images/icons/nfo.png); }
 .button_nzb { background-image:url({{MEDIA_URL}}/images/icons/download.png); }
-
+.button_related { background-image:url({{MEDIA_URL}}/images/icons/related.png); }
 
 .loading {
     height:50px;
