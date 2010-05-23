@@ -11,11 +11,14 @@ from models import Post
 
 @login_required
 def posts(request):
+    count = Post.objects.all().count()
     posts, page, pages = paginate(request, Post.objects.all())
 
     return render_to_response('posts.html', {
+        'total':count,
         'posts':posts,
         'page_start':(page-1)*25,
+        'page_end':(page-1)*25 + len(posts.object_list),
         'pages':pages
     }, context_instance=RequestContext(request))
 
@@ -95,8 +98,10 @@ def find_related(request, id):
     posts, page, pages = paginate(request, query)
 
     return render_to_response('posts.html', {
+        'total':query.count(),
         'posts':posts,
         'page_start':(page-1)*25,
+        'page_end':(page-1)*25 + len(posts.object_list),
         'pages':pages
     }, context_instance=RequestContext(request))
 
@@ -110,7 +115,9 @@ def search(request):
     posts, page, pages = paginate(request, query)
 
     return render_to_response('posts.html', {
+        'total':query.count(),
         'posts':posts,
         'page_start':(page-1)*25,
+        'page_end':(page-1)*25 + len(posts.object_list),
         'pages':pages
     }, context_instance=RequestContext(request))

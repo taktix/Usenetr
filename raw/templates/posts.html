@@ -75,6 +75,8 @@
             font-family: verdana,helvetica,arial,sans-serif;
             font-weight:bold;
         }
+        
+        #count {float:left;}
     </style>
     
     <script type="text/javascript">
@@ -119,6 +121,11 @@
 {% endblock %}
 
 {% block content %}
+
+    <div id="count">
+       {{page_start}} - {{page_end}} of {{total}}
+    </div>
+
     {% if not pages.0|length_is:1 or pages.1 or pages.2 %}
     <div class="pagination">
         <span class="step-links">
