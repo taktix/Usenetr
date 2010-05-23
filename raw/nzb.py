@@ -62,11 +62,9 @@ class File():
         """
         Adds a Post (segment) to this file
         """
-        """
-        for group in post.groups:
-            if not group.name in self.groups():
+        for group in post.groups.all():
+            if not group.name in self.groups:
                 self.groups.append(group.name)
-        """
         self.segments.append(post)
 
     def __len__(self):

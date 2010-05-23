@@ -28,6 +28,12 @@ def c_post(id=1, segment_id=1, segment_total=5, file=FILENAME, **kwargs):
     post.subject = SUBJECT % (file, segment_id, segment_total)
     post.__dict__.update(kwargs)
     post.save()
+    
+    try:
+        group = Group.objects.get(name='alt.testing')
+    except Group.DoesNotExist:
+        group = c_group()
+    post.groups.add(group)
     return post
 
 
@@ -170,5 +176,7 @@ class NZBTest(unittest.TestCase):
         self.assert_(FILENAME in nzb, nzb.files)
         file = nzb[FILENAME]
         self.assert_(len(file)==5, len(file))
+        self.assert_('alt.testing' in file.groups, file.groups)
         file = nzb['testers.8x23-taktix.rar']
         self.assert_(len(file)==10, len(file))
+        self.assert_('alt.testing' in file.groups, file.groups)
