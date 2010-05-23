@@ -4,7 +4,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
-
+from django.views.generic.simple import redirect_to
 
 from models import Post
 
@@ -107,14 +107,22 @@ def find_related(request, id):
 
 
 @login_required
-def search(request):
+def search_redirect(request):
+    """ redirects to proper search url """
+    clause = request.GET['clause']
+    return redirect_to(request, '/search/%s/'%clause)
+
+
+@login_required
+def search(request, clauses):
     query = Post.objects.all()
-    for clause in request.GET['clause'].split(' '):
+    for clause in clauses.split(' '):
         query = query.filter(subject__icontains=clause)
     
     posts, page, pages = paginate(request, query)
 
     return render_to_response('posts.html', {
+        'clause':clauses,
         'total':query.count(),
         'posts':posts,
         'page_start':(page-1)*25,

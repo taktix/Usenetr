@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     (r'^nfo/$', nfo),
     (r'^nzb/(.*)/$', nzb_download),
     (r'^related/(.*)/$', find_related),
-    (r'^search/', search)
+    (r'^search/$', search_redirect),
+    (r'^search/(.*)/$', search),
 )
