@@ -1,22 +1,19 @@
-
+from xml.dom.minidom import Document
 
 """
+example nzb
+
 <nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
-<file poster="teevee@4u.tv (teevee)" date="1253148619" subject="[1854]-[FULL]-[#a.b.teevee@EFNet]-[ Friends.S08E23-E24.The.One.Where.Rachel.Has.A.Baby.UNCUT.DVDRip.XviD-SAiNTS ]-[38/38] - &#34;friends.8x23-saints.vol31+04.par2&#34; yEnc (1/7)">
+<file poster="tester" date="1253148619" subject="">
 <groups>
-<group>alt.binaries.multimedia</group>
-<group>alt.binaries.teevee</group>
+<group>alt.testing</group>
 </groups>
 <segments>
-<segment bytes="792927" number="1">1253148619.30301.1@news.astraweb.com</segment>
-<segment bytes="793062" number="2">1253148619.34830.2@news.astraweb.com</segment>
-<segment bytes="792907" number="3">1253148619.37062.3@news.astraweb.com</segment>
-<segment bytes="792852" number="4">1253148619.38625.4@news.astraweb.com</segment>
-<segment bytes="792820" number="5">1253148619.39987.5@news.astraweb.com</segment>
-<segment bytes="792772" number="6">1253148619.41607.6@news.astraweb.com</segment>
-<segment bytes="41743" number="7">1253148619.46308.7@news.astraweb.com</segment>
+<segment bytes="792927" number="1">post.id</segment>
+<segment bytes="793062" number="2">post.id</segment>
 </segments>
 </file>
+</nzb>
 """
 
 
@@ -37,7 +34,35 @@ class NZB(object):
         self.files = files
     
     def to_xml(self):
-        pass
+        doc = Document()
+        nzb = doc.createElement("nzb")
+        nzb.setAttribute("xmlns","http://www.newzbin.com/DTD/2003/nzb")
+        doc.appendChild(nzb)
+        
+        for name, file in self.files.items():
+            file_element = doc.createElement('file')
+            file_element.setAttribute('subject', file.subject)
+            nzb.appendChild(file_element)
+            groups = doc.createElement('groups')
+            for name in file.groups:
+                group = doc.createElement('group')
+                text = doc.createTextNode(name)
+                group.appendChild(text)
+                groups.appendChild(group)
+            file_element.appendChild(groups)
+            
+            segments = doc.createElement('segments')
+            for post in file.segments:
+                segment = doc.createElement('segment')
+                number, total = post.segment_id
+                segment.setAttribute('number', str(number))
+                text = doc.createTextNode(post.id)
+                segment.appendChild(text)
+                segments.appendChild(segment)
+            file_element.appendChild(segments)
+        
+        return nzb.toxml()
+
     
     def __len__(self):
         return len(self.files)

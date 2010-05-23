@@ -158,6 +158,10 @@ class NZBTest(unittest.TestCase):
     
     def setUp(self):
         self.tearDown()
+        for i in range(5):
+            c_post(id=i+1,  segment_id=i+1, segment_total=5)
+        for i in range(10):
+            c_post(id=i+10, segment_id=i+1, segment_total=10, file='testers.8x23-taktix.rar')
     
     def tearDown(self):
         Post.objects.all().delete()
@@ -165,10 +169,6 @@ class NZBTest(unittest.TestCase):
     
     def test_build_test(self):
         """ tests that a query is divided up accordingly """
-        for i in range(5):
-            c_post(id=i+1,  segment_id=i+1, segment_total=5)
-        for i in range(10):
-            c_post(id=i+10, segment_id=i+1, segment_total=10, file='testers.8x23-taktix.rar')
         self.assert_(Post.objects.all().count()==15, Post.objects.all().values('id'))
         nzb = NZB(Post.objects.all())
         self.assert_(len(nzb)==2, nzb.files)
@@ -180,3 +180,8 @@ class NZBTest(unittest.TestCase):
         file = nzb['testers.8x23-taktix.rar']
         self.assert_(len(file)==10, len(file))
         self.assert_('alt.testing' in file.groups, file.groups)
+    
+    def test_xml(self):
+        self.assert_(Post.objects.all().count()==15, Post.objects.all().values('id'))
+        nzb = NZB(Post.objects.all())
+        print nzb.to_xml()
