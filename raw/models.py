@@ -4,6 +4,7 @@ from django.db import models
 
 from nntp import Server, GroupIterator
 from raw import get_server
+from raw.nzb import NZB
 from util.regex import Composite
 
 NZB_REGEX = re.compile('\.nzb')
@@ -191,6 +192,11 @@ class Post(models.Model):
         post if needed
         """
         if not self.nzb_id:
+            # no nzb id, use find related to build an nzb for the file this
+            # post is for.  Only works if find_related() returns posts
+            related = self.find_related()
+            if related:
+                return NZB(related).to_xml()
             return None
         if self._nzb:
             return self._nzb

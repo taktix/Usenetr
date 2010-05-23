@@ -42,6 +42,9 @@ class NZB(object):
         for name, file in self.files.items():
             file_element = doc.createElement('file')
             file_element.setAttribute('subject', file.subject)
+            file_element.setAttribute('poster', file.poster)
+            file_element.setAttribute('subject', file.date)
+            
             nzb.appendChild(file_element)
             groups = doc.createElement('groups')
             for name in file.groups:
@@ -56,7 +59,8 @@ class NZB(object):
                 segment = doc.createElement('segment')
                 number, total = post.segment_id
                 segment.setAttribute('number', str(number))
-                text = doc.createTextNode(post.id)
+                segment.setAttribute('bytes', '792927')
+                text = doc.createTextNode(post.id.replace('<','').replace('>',''))
                 segment.appendChild(text)
                 segments.appendChild(segment)
             file_element.appendChild(segments)
@@ -78,7 +82,8 @@ class File():
     def __init__(self, post):
         self.filename = post.filename
         self.subject = post.subject
-
+        self.poster = "unknown"
+        self.date = "1253148619"
         self.groups = []
         self.segments = []
         self.add(post)
