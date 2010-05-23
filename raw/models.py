@@ -13,6 +13,7 @@ NZB_NFO_REGEX = re.compile('\.nfo(.|\n)*?<segment.*number="1"\>(.*)\</segment>')
 
 YENC_SEGMENT = re.compile('yEnc \((\d+)/(\d+)\)')
 YENC_FILENAME = re.compile('"(.*)" yEnc \(\d+/\d+\)')
+YENC_SHORT_FILENAME = re.compile('"(.*)\.\w+" yEnc \(\d+/\d+\)')
 
 class PostFilter(models.Model):
     """ regex used to filter post titles when crawling """
@@ -220,11 +221,17 @@ class Post(models.Model):
             return match.groups()[0]
     filename=property(get_filename)
     
+    def get_short_filename(self):
+        match = YENC_SHORT_FILENAME.search(self.subject)
+        if match:
+            return match.groups()[0]
+    short_filename=property(get_short_filename)
+    
     def find_related(self):
         """ finds related segments that make up the same file as this post """
-        filename = self.filename
+        filename = self.short_filename
         if filename:
-            return Post.objects.filter(subject__contains=self.filename)
+            return Post.objects.filter(subject__contains=filename)
         return Post.objects.none()
     
     
