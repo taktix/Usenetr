@@ -84,7 +84,7 @@ def nfo(request):
 def nzb_download(request, id):
     post = Post.objects.get(id=id)
     response = HttpResponse(mimetype='application/nzb')
-    response['Content-Disposition'] = 'attachment; filename=%s.nzb' % id
+    response['Content-Disposition'] = 'attachment; filename=%s.nzb' % post.filename
     response.write(post.nzb)
     return response
 
