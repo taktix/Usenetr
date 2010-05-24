@@ -36,7 +36,7 @@ if __name__ == '__main__':
             
         end = time.time()
         duration = end - start
-        
+        print 'finished cycle, duration: %s secs' % duration
         if duration < INTERVAL:
             print 'too soon, sleeping: %s secs' % INTERVAL-duration
             time.sleep(INTERVAL-duration)
